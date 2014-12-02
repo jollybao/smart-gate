@@ -1,0 +1,51 @@
+function onSubmit(e) {
+  
+  var Switch = e.values[1];
+  
+  var payload =
+   {
+     "params" : Switch
+   };
+  
+  var options =
+   {
+     "method" : "post",
+     "payload" : payload
+   };
+   
+    UrlFetchApp.fetch("https://api.spark.io/v1/devices/53ff6b066667574818371267/power?access_token=f571fc5a36f137d19f6d746c4c144ac938af7de1", options);
+  
+  Utilities.sleep(3000);
+  
+  var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/53ff6b066667574818371267/alert?access_token=f571fc5a36f137d19f6d746c4c144ac938af7de1");
+  var response = JSON.parse(response.getContentText());
+  var alert = unescape(response.result);
+  
+  var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/53ff6b066667574818371267/on?access_token=f571fc5a36f137d19f6d746c4c144ac938af7de1");
+  var response = JSON.parse(response.getContentText());
+  var sys_on = unescape(response.result);
+  
+  while(sys_on == 1){
+ 
+      if(alert == 1){
+         var email = Session.getActiveUser().getEmail();
+         var subject = 'alert from small baby gate';
+         var body = 'Your baby is leaving the safe zone';
+         GmailApp.sendEmail(email, subject, body);
+      }
+    
+      Utilities.sleep(3000);
+      
+      var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/53ff6b066667574818371267/alert?access_token=f571fc5a36f137d19f6d746c4c144ac938af7de1");
+      var response = JSON.parse(response.getContentText());
+      var alert = unescape(response.result);
+      
+      var response = UrlFetchApp.fetch("https://api.spark.io/v1/devices/53ff6b066667574818371267/on?access_token=f571fc5a36f137d19f6d746c4c144ac938af7de1");
+      var response = JSON.parse(response.getContentText());
+      var sys_on = unescape(response.result);
+}
+}
+
+
+  
+}
